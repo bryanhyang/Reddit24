@@ -1,5 +1,7 @@
 import atexit
+import prawPull
 import sys
+
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
@@ -43,12 +45,15 @@ def get_time():
 # Non-routing functions -----------------------------------
 def updateDB():
     print('EEE ERR', file=sys.stderr)
+    data = prawPull.pullTop()
+
+    #print(data)
 
 
 # Scheduler -----------------------------------------------
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=updateDB, trigger="interval", seconds=3) # set to 3 seconds for testing, otherwise 3600
+scheduler.add_job(func=updateDB, trigger="interval", seconds=10) # set to 3 seconds for testing, otherwise 3600
 scheduler.start()
 
 # Shut down the scheduler when exiting the app

@@ -2,7 +2,7 @@ import praw
 import re
 import string
 
-def pullTop(){
+def pullTop():
     bot = praw.Reddit(client_id = 'MX3tIwS510bcIw', client_secret = 'S-FYOnj_NgdT8WYBlzUFXlCgxkM', username = 'Reddit24Bot', password = 'npmrunstart-api', user_agent = 'Reddit24')
 
     topReddit = bot.front.top("day", limit = 150)
@@ -19,9 +19,9 @@ def pullTop(){
         
         urlList["%s"%post.url] = "https://reddit.com%s"%post.permalink
         i = i + 1
-        if(i == 64){
+        if(i == 64):
             break;
-        }
+        
         #print(post.url)
 
     #print(urlList)
@@ -29,5 +29,5 @@ def pullTop(){
     #print(len(urlList))
     
     return urlList
-}
+
 
