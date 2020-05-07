@@ -2,7 +2,7 @@ import atexit
 import prawPull
 import sys
 
-
+from os import environ
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask import Flask
@@ -11,6 +11,7 @@ app = Flask(__name__)
 # Global Variables ----------------------------------------
 today = datetime.today()
 
+MONGODB_URI = environ.get('MONGODB')
 
 # Routing -------------------------------------------------
 @app.route('/hello')
@@ -36,7 +37,7 @@ def date(date):
 
 @app.route('/')
 def landing():
-   return 'Hello World'
+    return 'Hello World'
 
 @app.route('/time')
 def get_time():
