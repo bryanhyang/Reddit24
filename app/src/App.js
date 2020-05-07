@@ -1,32 +1,36 @@
 import React from 'react';
-import logo from './peppa.ico';
 import './App.css';
 
 class App extends React.Component {
-
+	//probably integrate this into a class to modulize 
   	state = {
-    	title: '',
-    	body: '',
-    	posts: []
+    	isLoaded: false,
+    	submissions: []
   	};
 
-/*
-	getBlogPost = () => {
-    	axios.get('/api')
-    	  .then((response) => {
-    	    const data = response.data;
-    	    this.setState({ posts: data });
-    	    console.log('Data has been received!!');
-    	  })
-    	  .catch(() => {
-    	  	 alert('Error retrieving data!!!');
-    	  });
+	componentDidMount = () => {
+		this.getReddit();
+	};
+
+	getReddit = () => {
+    	fetch('http://jsonplaceholder.typicode.com/users')
+    	  	.then(res => res.json())
+		  	.then(json => {
+		  		this.setState({
+					isLoaded: true,
+					submissions: json,
+		 	 	})
+			})
+		  	.catch((error) => {
+		   	 	console.error('Error:', error);
+		  	});
 	}
-*/
+
 	render(){
     	return (  
     	  <div className="App">
-      			<h>helloworld</h>
+      			helloworld
+				{console.log(this.state.isLoaded)}
     	  </div>
     	);
   	}
