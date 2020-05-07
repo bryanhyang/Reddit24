@@ -1,26 +1,37 @@
 import React from 'react';
-import logo from './logo.svg';
+import logo from './peppa.ico';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+
+  	state = {
+    	title: '',
+    	body: '',
+    	posts: []
+  	};
+
+/*
+	getBlogPost = () => {
+    	axios.get('/api')
+    	  .then((response) => {
+    	    const data = response.data;
+    	    this.setState({ posts: data });
+    	    console.log('Data has been received!!');
+    	  })
+    	  .catch(() => {
+    	  	 alert('Error retrieving data!!!');
+    	  });
+	}
+*/
+	render(){
+    	return (  
+    	  <div className="App">
+      			<h>helloworld</h>
+    	  </div>
+    	);
+  	}
+
 }
+
 
 export default App;
