@@ -17,11 +17,9 @@ today = datetime.today()
 # MongoDB -------------------------------------------------
 
 MONGODB_URI = environ.get('MONGODB')
+print(MONGODB_URI)
 
-# app.config["MONGODB_HOST"] = MONGODB_URI
-# db = MongoEngine(app)
-
-db = connect(host=MONGODB_URI)
+connect(host=MONGODB_URI)
 
 # creating model
 class Submission(EmbeddedDocument):
@@ -66,6 +64,7 @@ def get_time():
     return {'time': time.time()}
 
 # Non-routing functions -----------------------------------
+@app.before_first_request
 def updateDB():
     data = prawPull.pullTop()
     print(data)
@@ -84,6 +83,6 @@ scheduler.start()
 # Shut down the scheduler when exiting the app
 atexit.register(lambda: scheduler.shutdown())
 
+
 if __name__ == '__main__':
-    updateDB()
     app.run(use_reloader=False)
