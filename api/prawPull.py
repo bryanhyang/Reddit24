@@ -1,6 +1,5 @@
 import praw
 import re
-import string
 
 def pullTop():
     bot = praw.Reddit(client_id = 'MX3tIwS510bcIw', client_secret = 'S-FYOnj_NgdT8WYBlzUFXlCgxkM', username = 'Reddit24Bot', password = 'npmrunstart-api', user_agent = 'Reddit24')

@@ -7,7 +7,8 @@ from os import environ
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask import Flask, request, jsonify
-from flask_mongoengine import MongoEngine
+#from flask_mongoengine import MongoEngine
+from mongoengine import *
 app = Flask(__name__)
 
 # Global Variables ----------------------------------------
@@ -17,19 +18,19 @@ today = datetime.today()
 
 MONGODB_URI = environ.get('MONGODB')
 
-app.config["MONGODB_HOST"] = DB_URI
+# app.config["MONGODB_HOST"] = MONGODB_URI
+# db = MongoEngine(app)
 
-db = MongoEngine(app)
-db.init_app(app)
+db = connect(host=MONGODB_URI)
 
 # creating model
-class Submission(db.EmbeddedDocument):
-    image = db.URLField(required=True))
-    link = db.URLField(required=True))
+class Submission(EmbeddedDocument):
+    image = URLField(required=True)
+    link = URLField(required=True)
 
-class Day(db.Document):
-    date = db.DateTimeField(required=True)
-    submissions = db.ListField(EmbeddedDocumentField(Submission))
+class Day(Document):
+    date = DateTimeField(required=True)
+    submissions = ListField(EmbeddedDocumentField(Submission))
 
 # Routing -------------------------------------------------
 @app.route('/hello')
@@ -46,7 +47,7 @@ def date(date):
     diff = today - target
     if diff.days > 0:
         print('Valid date', file=sys.stderr)
-        mongoRes = Day.objects(date = target)
+        mongoRes = Day.objects(date = target).first()
         if mongoRes == None:
             abort(404)
         return mongoRes
@@ -66,20 +67,23 @@ def get_time():
 
 # Non-routing functions -----------------------------------
 def updateDB():
-    print('EEE ERR', file=sys.stderr)
     data = prawPull.pullTop()
-
-    #print(data)
-
+    print(data)
+    tmp = Day(date=datetime.today(), submissions=[])
+    for k,v in data.items():
+       tmp.submissions.append(Submission(image=v, link=k))
+    tmp.save()
+    print(tmp)
 
 # Scheduler -----------------------------------------------
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=updateDB, trigger="interval", seconds=10) # set to 3 seconds for testing, otherwise 3600
+scheduler.add_job(func=updateDB, trigger="interval", seconds=3600) # set to 3 seconds for testing, otherwise 3600
 scheduler.start()
 
 # Shut down the scheduler when exiting the app
 atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == '__main__':
-      app.run(use_reloader=False)
+    updateDB()
+    app.run(use_reloader=False)
