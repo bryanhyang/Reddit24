@@ -27,7 +27,7 @@ class Submission(EmbeddedDocument):
     link = URLField(required=True)
 
 class Day(Document):
-    date = DateTimeField(required=True)
+    date = StringField(required=True)
     submissions = ListField(EmbeddedDocumentField(Submission))
 
 # Routing -------------------------------------------------
@@ -45,7 +45,8 @@ def date(date):
     diff = today - target
     if diff.days > 0:
         print('Valid date', file=sys.stderr)
-        mongoRes = Day.objects(date = target).first()
+        print(target)
+        mongoRes = Day.objects(date = datetime.strptime(date, "%Y-%m-%d")).first()
         if mongoRes == None:
             abort(404)
         return mongoRes
@@ -68,7 +69,7 @@ def get_time():
 def updateDB():
     data = prawPull.pullTop()
     print(data)
-    tmp = Day(date=datetime.today(), submissions=[])
+    tmp = Day(date=datetime.today().strftime('%Y-%m-%d'), submissions=[])
     for k,v in data.items():
        tmp.submissions.append(Submission(image=v, link=k))
     tmp.save()
