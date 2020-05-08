@@ -19,7 +19,7 @@ today = datetime.today()
 MONGODB_URI = environ.get('MONGODB')
 print(MONGODB_URI)
 
-connect(db = "subreddits",host=MONGODB_URI)
+connect('subreddits',host=MONGODB_URI)
 
 # creating model
 class Submission(EmbeddedDocument):
@@ -29,6 +29,7 @@ class Submission(EmbeddedDocument):
 class Day(Document):
     date = StringField(required=True)
     submissions = ListField(EmbeddedDocumentField(Submission))
+    meta = {'collection': 'frontpage'}
 
 # Routing -------------------------------------------------
 @app.route('/hello')
