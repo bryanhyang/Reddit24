@@ -13,7 +13,7 @@ class App extends React.Component {
 	};
 
 	getReddit = () => {
-    	fetch('http://jsonplaceholder.typicode.com/users')
+    	fetch('https://reddit24.com/')
     	  	.then(res => res.json())
 		  	.then(json => {
 		  		this.setState({
