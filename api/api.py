@@ -31,7 +31,6 @@ class Day(db.Document):
     date = db.DateTimeField(required=True)
     submissions = db.ListField(EmbeddedDocumentField(Submission))
 
-
 # Routing -------------------------------------------------
 @app.route('/hello')
 def hello_world():
@@ -47,7 +46,10 @@ def date(date):
     diff = today - target
     if diff.days > 0:
         print('Valid date', file=sys.stderr)
-        return {'date': str(date)}
+        mongoRes = Day.objects(date = target)
+        if mongoRes == None:
+            abort(404)
+        return mongoRes
     else:
         print('Invalid date', file=sys.stderr)
         return {'date': ''}
