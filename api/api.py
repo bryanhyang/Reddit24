@@ -19,7 +19,7 @@ today = datetime.today()
 MONGODB_URI = environ.get('MONGODB')
 print(MONGODB_URI)
 
-connect(host=MONGODB_URI)
+connect(db = "subreddits",host=MONGODB_URI)
 
 # creating model
 class Submission(EmbeddedDocument):
@@ -35,26 +35,26 @@ class Day(Document):
 def hello_world():
    return 'Hello World'
 
-@app.route('/date/<date>')
-def date(date):
+@app.route('/date/<client_date>')
+def date(client_date):
     try:
-        target = datetime.strptime(date, "%Y-%m-%d")
+        target = datetime.strptime(client_date, "%Y-%m-%d")
     except ValueError:
         print('Invalid date', file=sys.stderr)
         return {'date': ''}
     diff = today - target
     if diff.days > 0:
         print('Valid date', file=sys.stderr)
-        print(target)
-        mongoRes = Day.objects(date = datetime.strptime(date, "%Y-%m-%d")).first()
+        print(client_date)
+        mongoRes = Day.objects(date = client_date).first()
         if mongoRes == None:
             abort(404)
-        return mongoRes
+        return mongoRes.to_json()
     else:
         print('Invalid date', file=sys.stderr)
         return {'date': ''}
 
-    return {'date': str(date)}
+    return {'date': str(client_date)}
 
 @app.route('/')
 def landing():
@@ -71,7 +71,7 @@ def updateDB():
     print(data)
     tmp = Day(date=datetime.today().strftime('%Y-%m-%d'), submissions=[])
     for k,v in data.items():
-       tmp.submissions.append(Submission(image=v, link=k))
+       tmp.submissions.append(Submission(image=k, link=v))
     tmp.save()
     print(tmp)
 
