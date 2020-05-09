@@ -1,11 +1,18 @@
 import React from 'react';
 import './App.css';
+import Img from 'react-image'
+import {
+  BrowserRouter as Router,
+    Switch,
+	  Route,
+	    Link
+		} from "react-router-dom";
 
 class App extends React.Component {
 	//probably integrate this into a class to modulize 
   	state = {
     	isLoaded: false,
-    	submissions: []
+    	submissions: {}
   	};
 
 	componentDidMount = () => {
@@ -13,9 +20,10 @@ class App extends React.Component {
 	};
 
 	getReddit = () => {
-    	fetch('https://reddit24.com/')
+    	fetch('/date/2020-05-07')
     	  	.then(res => res.json())
 		  	.then(json => {
+				
 		  		this.setState({
 					isLoaded: true,
 					submissions: json,
@@ -27,15 +35,35 @@ class App extends React.Component {
 	}
 
 	render(){
-    	return (  
-    	  <div className="App">
-      			helloworld
-				{console.log(this.state.isLoaded)}
-    	  </div>
-    	);
-  	}
+		var { isLoaded, submissions } = this.state;
+
+		if(!isLoaded){
+			return(
+				<div className="App">
+					no input
+				</div>
+			);
+
+		}
+		else{
+    		return (  
+    	  		<div className="App">
+      				helloworld
+					{console.log(isLoaded)};
+					
+						
+						{submissions.submissions.map(submission => (
+							<a href={submission.link} target="_blank">
+
+								<img src={submission.image}/>
+							</a>
+						))};
+						
+				 </div>
+    		);
+  		}
+	}
 
 }
-
 
 export default App;

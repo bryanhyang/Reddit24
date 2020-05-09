@@ -11,6 +11,7 @@ from flask_mongoengine import MongoEngine
 # from mongoengine import *
 app = Flask(__name__)
 
+today = datetime.today()
 # MongoDB -------------------------------------------------
 
 app.config.from_pyfile('settings.py')
@@ -35,7 +36,7 @@ class Day(db.Document):
 # Routing -------------------------------------------------
 @app.route('/hello')
 def hello_world():
-   return 'Hello World'
+   return {'Hello World':'hello world'}
 
 @app.route('/date/<client_date>')
 def date(client_date):
@@ -58,7 +59,7 @@ def date(client_date):
 
 @app.route('/')
 def landing():
-    return 'Hello World'
+    return {'Hello World':'hello world'}
 
 @app.route('/time')
 def get_time():
