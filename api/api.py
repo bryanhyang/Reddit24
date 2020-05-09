@@ -7,28 +7,29 @@ from os import environ
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask import Flask, request, jsonify
-#from flask_mongoengine import MongoEngine
-from mongoengine import *
+from flask_mongoengine import MongoEngine
+# from mongoengine import *
 app = Flask(__name__)
-
-# Global Variables ----------------------------------------
-today = datetime.today()
 
 # MongoDB -------------------------------------------------
 
-MONGODB_URI = environ.get('MONGODB')
-print(MONGODB_URI)
+app.config.from_pyfile('settings.py')
 
-connect('subreddits',host=MONGODB_URI)
+app.config['MONGODB_SETTINGS'] = {
+    'db': 'subreddits',
+    'host': app.config.get("MONGODB_URI")
+}
+
+db = MongoEngine(app)
 
 # creating model
-class Submission(EmbeddedDocument):
-    image = URLField(required=True)
-    link = URLField(required=True)
+class Submission(db.EmbeddedDocument):
+    image = db.URLField(required=True)
+    link = db.URLField(required=True)
 
-class Day(Document):
-    date = StringField(required=True)
-    submissions = ListField(EmbeddedDocumentField(Submission))
+class Day(db.Document):
+    date = db.StringField(required=True)
+    submissions = db.ListField(db.EmbeddedDocumentField(Submission))
     meta = {'collection': 'frontpage'}
 
 # Routing -------------------------------------------------
@@ -47,9 +48,7 @@ def date(client_date):
     if diff.days > 0:
         print('Valid date', file=sys.stderr)
         print(client_date)
-        mongoRes = Day.objects(date = client_date).first()
-        if mongoRes == None:
-            abort(404)
+        mongoRes = Day.objects(date = client_date).get_or_404()
         return mongoRes.to_json()
     else:
         print('Invalid date', file=sys.stderr)
@@ -68,7 +67,10 @@ def get_time():
 # Non-routing functions -----------------------------------
 @app.before_first_request
 def updateDB():
-    data = prawPull.pullTop()
+    data = prawPull.pullTop(app.config.get("CLIENT"), \
+                            app.config.get("PASSWORD"), \
+                            app.config.get("SECRET"))
+
     print(data)
     tmp = Day(date=datetime.today().strftime('%Y-%m-%d'), submissions=[])
     for k,v in data.items():

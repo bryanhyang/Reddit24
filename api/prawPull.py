@@ -1,8 +1,8 @@
 import praw
 import re
 
-def pullTop():
-    bot = praw.Reddit(client_id = 'MX3tIwS510bcIw', client_secret = 'S-FYOnj_NgdT8WYBlzUFXlCgxkM', username = 'Reddit24Bot', password = 'npmrunstart-api', user_agent = 'Reddit24')
+def pullTop(client: str, pswd: str, secret: str):
+    bot = praw.Reddit(client_id=client, client_secret=secret, username='Reddit24Bot', password=pswd, user_agent='Reddit24')
 
     topReddit = bot.front.top("day", limit = 150)
     urlList = {}
