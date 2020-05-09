@@ -18,8 +18,8 @@ def pullTop(client: str, pswd: str, secret: str):
         
         urlList["%s"%post.url] = "https://reddit.com%s"%post.permalink
         i = i + 1
-        if(i == 64):
-            break;
+        if i == 64:
+            break
         
         #print(post.url)
 

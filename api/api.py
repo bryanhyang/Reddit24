@@ -11,7 +11,9 @@ from flask_mongoengine import MongoEngine
 # from mongoengine import *
 app = Flask(__name__)
 
-today = datetime.today()
+todayDate = datetime.today().strftime('%Y%m%d') # today's date
+todaySub = None # today's submissions
+
 # MongoDB -------------------------------------------------
 
 app.config.from_pyfile('settings.py')
@@ -40,15 +42,18 @@ def hello_world():
 
 @app.route('/date/<client_date>')
 def date(client_date):
+    # date conversion
     try:
         target = datetime.strptime(client_date, "%Y-%m-%d")
     except ValueError:
         print('Invalid date', file=sys.stderr)
         return {'date': ''}
-    diff = today - target
-    if diff.days > 0:
-        print('Valid date', file=sys.stderr)
-        print(client_date)
+
+    # date check
+    diff = int(todayDate) - int(target.strftime('%Y%m%d'))
+    if diff == 0:
+        return today
+    elif diff > 0:
         mongoRes = Day.objects(date = client_date).get_or_404()
         return mongoRes.to_json()
     else:
@@ -67,22 +72,33 @@ def get_time():
 
 # Non-routing functions -----------------------------------
 @app.before_first_request
-def updateDB():
+def checkDB():
+    global todayDate, todaySub
+    todayDate = datetime.today().strftime('%Y%m%d') # update even if the same
+    mongoRes = Day.objects(date = todayDate).first()
+    # check if fetch succeeded
+    if mongoRes == None:
+        print('Generated todaySub', file=sys.stderr)
+        updateDB(save=False)
+    else:
+        print('Fetched todaySub', file=sys.stderr)
+        todaySub = mongoRes
+
+def updateDB(save=True):
     data = prawPull.pullTop(app.config.get("CLIENT"), \
-                            app.config.get("PASSWORD"), \
-                            app.config.get("SECRET"))
-
-    print(data)
-    tmp = Day(date=datetime.today().strftime('%Y-%m-%d'), submissions=[])
+                        app.config.get("PASSWORD"), \
+                        app.config.get("SECRET"))
+    tmp = Day(date=todayDate[:4] + '-' + todayDate[4:6] + '-' + todayDate[6:], submissions=[])
     for k,v in data.items():
-       tmp.submissions.append(Submission(image=k, link=v))
-    tmp.save()
-    print(tmp)
-
+        tmp.submissions.append(Submission(image=k, link=v))
+    if save:
+        tmp.save()
+    todaySub = tmp
+    
 # Scheduler -----------------------------------------------
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=updateDB, trigger="interval", seconds=3600) # set to 3 seconds for testing, otherwise 3600
+scheduler.add_job(func=updateDB, trigger="interval", days=1)
 scheduler.start()
 
 # Shut down the scheduler when exiting the app
