@@ -1,8 +1,12 @@
 import React from 'react';
 import './App.css';
 //import ImageFrame from './components/ImageFrame'
-import SideBar from './components/SideBar'
 import Gallery from 'react-photo-gallery';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import Sidebar from "react-sidebar"
+
+const mql = window.matchMedia(`(min-width: 720px)`);
 
 class App extends React.Component {
 	state = {
@@ -55,6 +59,31 @@ class App extends React.Component {
 		console.log(past)
 		this.getReddit(past);
 	}
+	constructor(props) {
+		super(props);
+		this.state = {
+			sidebarDocked: mql.matches,
+			sidebarOpen: false
+		};
+
+		this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
+		this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
+	}
+	componentWillMount() {
+        mql.addListener(this.mediaQueryChanged);
+    }
+
+    componentWillUnmount() {
+        this.state.mql.removeListener(this.mediaQueryChanged);
+    }
+
+    onSetSidebarOpen(open) {
+        this.setState({ sidebarOpen: open });
+    }
+
+    mediaQueryChanged() {
+        this.setState({ sidebarDocked: mql.matches, sidebarOpen: false });
+    }
 
 	render(){
 		let { recvData, submissions } = this.state;
@@ -73,8 +102,19 @@ class App extends React.Component {
     	  		<div className="App">
       				helloworld
 					{console.log(recvData)};
-					<SideBar newDate = {this.newDate} date = {this.state.date}/>	
+					<Sidebar
+						sidebar={
+							<Calendar
+								onChange={this.newDate}
+								value={this.state.date}
+							/>}
+						open={this.state.sidebarOpen}
+						docked={this.state.sidebarDocked}
+						onSetOpen={this.onSetSidebarOpen}
+						styles={{ sidebar: { background: "white" } }}
+					>
 					<Gallery photos={this.state.images} />
+					</Sidebar>
 				</div>
     		);
   		}
