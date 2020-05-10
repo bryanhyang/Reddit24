@@ -8,15 +8,19 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_mongoengine import MongoEngine
-# from mongoengine import *
+
+# Flask config --------------------------------------------
+
 app = Flask(__name__)
 
+app.config.from_pyfile('settings.py')
+
+# Global Variables ----------------------------------------
+
 todayDate = datetime.today().strftime('%Y%m%d') # today's date
-todaySub = None # today's submissions
+todaySub = '' # today's submissions
 
 # MongoDB -------------------------------------------------
-
-app.config.from_pyfile('settings.py')
 
 app.config['MONGODB_SETTINGS'] = {
     'db': 'subreddits',
@@ -52,19 +56,21 @@ def date(client_date):
     # date check
     diff = int(todayDate) - int(target.strftime('%Y%m%d'))
     if diff == 0:
-        return today
+        return todaySub
     elif diff > 0:
         mongoRes = Day.objects(date = client_date).get_or_404()
         return mongoRes.to_json()
     else:
         print('Invalid date', file=sys.stderr)
-        return {'date': ''}
+        abort(404)
 
-    return {'date': str(client_date)}
+@app.route('/today')
+def today():
+    return todaySub
 
 @app.route('/')
 def landing():
-    return {'Hello World':'hello world'}
+    return 'Welcome!'
 
 @app.route('/time')
 def get_time():
@@ -82,7 +88,7 @@ def checkDB():
         updateDB(save=False)
     else:
         print('Fetched todaySub', file=sys.stderr)
-        todaySub = mongoRes
+        todaySub = mongoRes.to_json()
 
 def updateDB(save=True):
     data = prawPull.pullTop(app.config.get("CLIENT"), \
@@ -93,7 +99,8 @@ def updateDB(save=True):
         tmp.submissions.append(Submission(image=k, link=v))
     if save:
         tmp.save()
-    todaySub = tmp
+    global todaySub
+    todaySub = tmp.to_json()
     
 # Scheduler -----------------------------------------------
 
