@@ -1,18 +1,10 @@
 import React from 'react';
 import './App.css';
-import Img from 'react-image'
-import {
-  BrowserRouter as Router,
-    Switch,
-	  Route,
-	    Link
-		} from "react-router-dom";
-
+import ImageFrame from './components/ImageFrame'
 class App extends React.Component {
-	//probably integrate this into a class to modulize 
-  	state = {
-    	isLoaded: false,
-    	submissions: {}
+	state = {
+    	recvData : false,
+    	submissions : {}
   	};
 
 	componentDidMount = () => {
@@ -20,27 +12,27 @@ class App extends React.Component {
 	};
 
 	getReddit = () => {
-    	fetch('/date/2020-05-07')
+    	fetch('/today')
     	  	.then(res => res.json())
-		  	.then(json => {
-				
+		  	.then(json => {		
 		  		this.setState({
-					isLoaded: true,
+					recvData: true,
 					submissions: json,
 		 	 	})
 			})
 		  	.catch((error) => {
 		   	 	console.error('Error:', error);
-		  	});
+			  });
 	}
 
 	render(){
-		var { isLoaded, submissions } = this.state;
+		var { recvData, submissions } = this.state;
 
-		if(!isLoaded){
+
+		if(!recvData){
 			return(
 				<div className="App">
-					no input
+					Loading . . .
 				</div>
 			);
 
@@ -49,21 +41,11 @@ class App extends React.Component {
     		return (  
     	  		<div className="App">
       				helloworld
-					{console.log(isLoaded)};
-					
-						
-						{submissions.submissions.map(submission => (
-							<a href={submission.link} target="_blank">
-
-								<img src={submission.image}/>
-							</a>
-						))};
-						
-				 </div>
+					{console.log(recvData)};
+					<ImageFrame submissions = {submissions}/>
+				</div>
     		);
   		}
 	}
-
 }
-
 export default App;
