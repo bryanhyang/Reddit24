@@ -1,11 +1,14 @@
 import React from 'react';
 import './App.css';
-import ImageFrame from './components/ImageFrame'
+//import ImageFrame from './components/ImageFrame'
 import SideBar from './components/SideBar'
+import Gallery from 'react-photo-gallery';
+
 class App extends React.Component {
 	state = {
     	recvData : false,
 		submissions : {},
+		images : {},
 		date : new Date()
 	};
 	 // this is a comment 
@@ -19,18 +22,32 @@ class App extends React.Component {
 		this.setState ({
 			recvData : false
 		});
-    	fetch(suffix)
-    	  	.then(res => res.json())
-		  	.then(json => {		
-				console.log(json);
+		fetch(suffix)
+			.then(res => res.json())
+		  	.then(json => {	
+				let newSubmissions = {};
+				let newImages = [];
+				json['submissions'].forEach(submission => {
+						let tmp = {}
+						tmp['src'] = submission.image
+						tmp['width'] = 4
+						tmp['height'] = 3
+						newImages.push(tmp)
+						newSubmissions[submission.image] = submission.link
+						
+				});
+				
 		  		this.setState({
 					recvData: true,
-					submissions: json,
-		 	 	})
+					submissions: newSubmissions,
+					images : newImages
+				})
+				console.log(newImages)
+				  
 			})
 		  	.catch((error) => {
 		   	 	console.error('Error:', error);
-			  });
+			});
 	}
 
 	newDate = (date) => {
@@ -56,8 +73,8 @@ class App extends React.Component {
     	  		<div className="App">
       				helloworld
 					{console.log(recvData)};
-					<SideBar newDate = {this.newDate} date = {this.state.date}/>
-					<ImageFrame submissions = {submissions}/>
+					<SideBar newDate = {this.newDate} date = {this.state.date}/>	
+					<Gallery photos={this.state.images} />
 				</div>
     		);
   		}
