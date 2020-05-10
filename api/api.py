@@ -1,12 +1,10 @@
 import atexit
 import prawPull
 import sys
-import json
 
-from os import environ
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
-from flask import Flask, request, jsonify
+from flask import Flask
 from flask_mongoengine import MongoEngine
 
 # Flask config --------------------------------------------
@@ -59,6 +57,7 @@ def date(client_date):
         return todaySub
     elif diff > 0:
         mongoRes = Day.objects(date = client_date).get_or_404()
+        print(mongoRes.to_json())
         return mongoRes.to_json()
     else:
         print('Invalid date', file=sys.stderr)
