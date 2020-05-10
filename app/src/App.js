@@ -50,6 +50,12 @@ class App extends React.Component {
 			});
 	}
 
+	openLink = (e, index) => {
+		console.log(e)
+		console.log(index)
+		window.open(this.state.submissions[index.photo.src]);
+	}
+
 	newDate = (date) => {
 		let past = '/date/' + date.toJSON().slice(0,10);
 		console.log(past)
@@ -74,7 +80,7 @@ class App extends React.Component {
       				helloworld
 					{console.log(recvData)};
 					<SideBar newDate = {this.newDate} date = {this.state.date}/>	
-					<Gallery photos={this.state.images} />
+					<Gallery photos={this.state.images} onClick = {this.openLink}/>
 				</div>
     		);
   		}
