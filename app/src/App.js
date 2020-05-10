@@ -5,7 +5,8 @@ class App extends React.Component {
 	state = {
     	recvData : false,
     	submissions : {}
-  	};
+	  };
+	 // this is a comment 
 
 	componentDidMount = () => {
 		this.getReddit();
