@@ -1,32 +1,28 @@
 import React from 'react';
-
+import Image from './ImageFrame/Image'
 class ImageFrame extends React.Component {
     state = {
-    	recvData : false,
-    	submissions : {}
+    	images : []
     };
       
     componentDidMount = () => {
-		this.props.submissions.submissions.map(submission => (
-            createImage(submission)
+        console.log(typeof this.state.images)
+        let i = 0
+		let newImages = this.props.submissions.submissions.map(submission => (
+            <Image data = {submission} key = {i++}/>
         ))
+        this.setState({
+            images : newImages
+        })
 	};
     
-    createImage = () => {
-        
-
-
-
-    }
+    
 
     render(){
         return(
             <div>
-                {this.props.submissions.submissions.map(submission => (
-                    <a href={submission.link} target="_blank" rel="noopener noreferrer">
-                        <img src={submission.image} alt="Placeholder"/>
-                    </a>
-                ))};
+                {console.log(this.state.images)}
+                {this.state.images}
             </div>
         );
     }
