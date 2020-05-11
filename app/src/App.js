@@ -35,13 +35,13 @@ class App extends React.Component {
 				let newSubmissions = {};
 				let newImages = [];
 				json['submissions'].forEach(submission => {
-					let tmp = {}
-					tmp['src'] = submission.image
-					tmp['width'] = 4
-					tmp['height'] = 3
-					newImages.push(tmp)
-					newSubmissions[submission.image] = submission.link
-
+						let tmp = {}
+						tmp['src'] = submission.image
+						tmp['width'] = 1
+						tmp['height'] = submission.ratio
+						newImages.push(tmp)
+						newSubmissions[submission.image] = submission.link
+						
 				});
 
 				this.setState({

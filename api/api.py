@@ -31,6 +31,7 @@ db = MongoEngine(app)
 class Submission(db.EmbeddedDocument):
     image = db.URLField(required=True)
     link = db.URLField(required=True)
+    ratio = db.FloatField(required=True)
 
 class Day(db.Document):
     date = db.StringField(required=True)
@@ -95,7 +96,7 @@ def updateDB(save=True):
                         app.config.get("SECRET"))
     tmp = Day(date=todayDate[:4] + '-' + todayDate[4:6] + '-' + todayDate[6:], submissions=[])
     for k,v in data.items():
-        tmp.submissions.append(Submission(image=k, link=v))
+        tmp.submissions.append(Submission(image=k, link=v[0], ratio=v[1]))
     if save:
         tmp.save()
     global todaySub
