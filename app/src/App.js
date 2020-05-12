@@ -2,23 +2,29 @@ import React from 'react';
 import './App.css';
 import Gallery from 'react-photo-gallery';
 import Calendar from 'react-calendar';
-// import 'react-calendar/dist/Calendar.css';
 import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Navbar from 'react-bootstrap/Navbar'
+import Button from 'react-bootstrap/Button'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-calendar/dist/Calendar.css';
 
-
 class App extends React.Component {
-	state = {
-		recvData: false,
-		submissions: {},
-		images: {},
-		date: new Date()
-	};
-	// this is a comment 
+	constructor(props) {
+		super(props);
+		this.handleLoginClick = this.handleCalendarClick.bind(this);
+		this.getReddit = this.getReddit.bind(this);
+		this.newDate = this.newDate.bind(this);
+		this.state = {
+			recvData: false,
+			submissions: {},
+			images: {},
+			date: new Date(),
+			showCalendar: true
+		};
+	}
+
 
 	componentDidMount = () => {
 		this.getReddit();
@@ -35,13 +41,13 @@ class App extends React.Component {
 				let newSubmissions = {};
 				let newImages = [];
 				json['submissions'].forEach(submission => {
-						let tmp = {}
-						tmp['src'] = submission.image
-						tmp['width'] = 1
-						tmp['height'] = submission.ratio
-						newImages.push(tmp)
-						newSubmissions[submission.image] = submission.link
-						
+					let tmp = {}
+					tmp['src'] = submission.image
+					tmp['width'] = 1
+					tmp['height'] = submission.ratio
+					newImages.push(tmp)
+					newSubmissions[submission.image] = submission.link
+
 				});
 
 				this.setState({
@@ -69,11 +75,24 @@ class App extends React.Component {
 		this.getReddit(past);
 	}
 
+
+
+	handleCalendarClick = () => {
+		this.setState((state) => ({ dispCalendar: !state.dispCalendar }));
+	}
+
+
+
+
+
 	render() {
-		let { recvData, submissions } = this.state;
 
+		let calendar = <Calendar onChange={this.newDate} value={this.state.date}/>
+		if (!this.state.showCalendar) {
+			calendar = ''
+		}
 
-		if (!recvData) {
+		if (!this.state.recvData) {
 			return (
 				<div className="App">
 					Loading . . .
@@ -84,13 +103,16 @@ class App extends React.Component {
 		else {
 			return (
 				<div className="App">
-					{console.log(recvData)};
-					<Container fluid>
-						<Navbar variant="white" bg="dark"> Hello
-						</Navbar>
+					<Navbar bg="primary">
+						<Button variant="primary" onClick={() => this.setState({showCalendar: !this.state.showCalendar})}>
+							{this.state.showCalendar ? 'Hide Calendar' : 'Show Calendar'}
+						</Button>
+						Welcome to Reddit24
+					</Navbar>
+					<Container fluid >
 						<Row>
 							<Col md="auto">
-								<Calendar> onChange={this.newDate} value={this.state.date} </Calendar>
+								{calendar}
 							</Col>
 							<Col>
 								<Gallery photos={this.state.images} onClick={this.openLink} />
