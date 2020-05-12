@@ -3,13 +3,16 @@ import prawPull
 import sys
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from dotenv import load_dotenv
 from datetime import datetime
 from flask import Flask
 from flask_mongoengine import MongoEngine
 
 # Flask config --------------------------------------------
 
-app = Flask(__name__)
+load_dotenv('.env')
+
+app = Flask(__name__, static_folder='../app/build', static_url_path='/')
 
 app.config.from_pyfile('settings.py')
 
@@ -69,8 +72,8 @@ def today():
     return todaySub
 
 @app.route('/')
-def landing():
-    return 'Welcome!'
+def index():
+    return app.send_static_file('index.html')
 
 @app.route('/time')
 def get_time():

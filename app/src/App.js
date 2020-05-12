@@ -73,6 +73,7 @@ class App extends React.Component {
 		let past = '/date/' + date.toJSON().slice(0, 10);
 		console.log(past)
 		this.getReddit(past);
+		this.setState({date})
 	}
 
 
@@ -89,7 +90,7 @@ class App extends React.Component {
 
 		let calendar = <Calendar onChange={this.newDate} value={this.state.date}/>
 		if (!this.state.showCalendar) {
-			calendar = ''
+			calendar = null
 		}
 
 		if (!this.state.recvData) {
